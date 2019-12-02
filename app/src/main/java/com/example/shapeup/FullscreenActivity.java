@@ -110,12 +110,7 @@ public class FullscreenActivity extends AppCompatActivity {
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
         findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
-        Button playButton = findViewById(R.id.play);
-        Button scoresButton = findViewById(R.id.scores);
-        Button settingsButton = findViewById(R.id.settings);
-        playButton.setOnClickListener(unused -> {
-            startActivity(new Intent(this, NewGameActivity.class));
-        })
+
 
     }
 
