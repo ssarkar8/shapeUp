@@ -4,6 +4,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -27,6 +29,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -40,23 +43,50 @@ public class MainActivity extends AppCompatActivity {
     ImageView pic;
 
     private SensorManager mSensorManager;
-    private Sensor mAccelerometer;
-    private ShakeDetector mShakeDetector;
+    private float mAccel; // acceleration apart from gravity
+    private float mAccelCurrent; // current acceleration including gravity
+    private float mAccelLast; // last acceleration including gravity
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.welcome_screen);
 
+
+
         pic = findViewById(R.id.image);
-        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        mShakeDetector = new ShakeDetector();
-        mShakeDetector.setOnShakeListener(new ShakeDetector.OnShakeListener() {
-            public void onShake(int count) {
-                startDogAPI(pic);
+
+
+        final SensorEventListener mSensorListener = new SensorEventListener() {
+
+            public void onSensorChanged(SensorEvent se) {
+                float x = se.values[0];
+                float y = se.values[1];
+                float z = se.values[2];
+                mAccelLast = mAccelCurrent;
+                mAccelCurrent = (float) Math.sqrt((double) (x*x + y*y + z*z));
+                float delta = mAccelCurrent - mAccelLast;
+                mAccel = mAccel * 0.9f + delta; // perform low-cut filter
+                if (mAccel > 3) {
+                    Toast toast = Toast.makeText(getApplicationContext(), "Device has shaken.", Toast.LENGTH_LONG);
+                    toast.show();
+                    startDogAPI(pic);
+                }
             }
-        });
+
+            public void onAccuracyChanged(Sensor sensor, int accuracy) {
+            }
+        };
+
+
+        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        mSensorManager.registerListener(mSensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
+        mAccel = 0.00f;
+        mAccelCurrent = SensorManager.GRAVITY_EARTH;
+        mAccelLast = SensorManager.GRAVITY_EARTH;
+
 
         TextView textBox = findViewById(R.id.thing);
         textBox.setText("");
@@ -69,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void startDogAPI(ImageView view) {
-        view.setImageResource(0);
+
         RequestQueue queue = Volley.newRequestQueue(this);
         String url = "https://dog.ceo/api/breeds/image/random";
         try {
@@ -80,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
                             Log.d("My App", "success!!!!!!");
                             try {
                                 String newUrl = response.get("message").toString();
-                                Picasso.get().load(newUrl).tag("current").into(view);
+                                Picasso.get().load(newUrl).resize(600, 500).centerCrop().into(view);
                                 Log.d("My App", "success!!!!!!");
                             } catch (JSONException e) {
                                 Log.e("My App", "json exception");
@@ -100,20 +130,6 @@ public class MainActivity extends AppCompatActivity {
     }
     void startQuoteApi() {
 
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        // Add the following line to register the Session Manager Listener onResume
-        mSensorManager.registerListener(mShakeDetector, mAccelerometer,	SensorManager.SENSOR_DELAY_UI);
-    }
-
-    @Override
-    public void onPause() {
-        // Add the following line to unregister the Sensor Manager onPause
-        mSensorManager.unregisterListener(mShakeDetector);
-        super.onPause();
     }
 
 }
