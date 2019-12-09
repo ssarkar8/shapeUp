@@ -90,18 +90,12 @@ public class MainActivity extends AppCompatActivity {
         textBox.setText("");
         Button messageButton = findViewById(R.id.message);
         //when button is clicked, load new image
-
-
         messageButton.setOnClickListener(unused -> {
 
             startAPI();
 
         });
-
-
     }
-
-
     void startAPI() {
 
 
@@ -167,8 +161,6 @@ public class MainActivity extends AppCompatActivity {
             System.out.println("uh oh");
         }
     }
-
-
 }
 
 
