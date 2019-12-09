@@ -18,11 +18,11 @@
     <TextView
         android:id="@+id/thing"
         android:layout_width="match_parent"
-        android:layout_height="220dp"
+        android:layout_height="144dp"
         android:text="TextView"
         android:textAlignment="center"
         android:textColor="#009688"
-        android:textSize="12pt" />
+        android:textSize="11pt" />
 
     <ImageView
         android:id="@+id/image"
