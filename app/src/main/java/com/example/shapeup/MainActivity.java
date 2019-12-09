@@ -10,6 +10,7 @@ import android.hardware.SensorManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
@@ -31,6 +32,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
@@ -41,6 +43,8 @@ import java.net.URL;
 
 public class MainActivity extends AppCompatActivity {
     ImageView pic;
+    TextView textBox;
+    TextView instructionBox;
 
     private SensorManager mSensorManager;
     private float mAccel; // acceleration apart from gravity
@@ -54,7 +58,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.welcome_screen);
 
-
+        instructionBox = findViewById((R.id.instruction));
+        instructionBox.setText("Or Shake Me!");
 
         pic = findViewById(R.id.image);
 
@@ -72,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
                 if (mAccel > 3) {
                     Toast toast = Toast.makeText(getApplicationContext(), "Device has shaken.", Toast.LENGTH_LONG);
                     toast.show();
-                    startDogAPI(pic);
+                    startAPI();
                 }
             }
 
@@ -88,17 +93,22 @@ public class MainActivity extends AppCompatActivity {
         mAccelLast = SensorManager.GRAVITY_EARTH;
 
 
-        TextView textBox = findViewById(R.id.thing);
+        textBox = findViewById(R.id.thing);
         textBox.setText("");
         Button messageButton = findViewById(R.id.message);
         //when button is clicked, load new image
+
+
         messageButton.setOnClickListener(unused -> {
-            textBox.setText("The button was pressed!");
-            startDogAPI(pic);
+
+            startAPI();
+
         });
+
+
     }
 
-    void startDogAPI(ImageView view) {
+    void startAPI() {
 
         RequestQueue queue = Volley.newRequestQueue(this);
         String url = "https://dog.ceo/api/breeds/image/random";
@@ -110,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
                             Log.d("My App", "success!!!!!!");
                             try {
                                 String newUrl = response.get("message").toString();
-                                Picasso.get().load(newUrl).resize(600, 500).centerCrop().into(view);
+                                Picasso.get().load(newUrl).resize(600, 500).centerCrop().into(pic);
                                 Log.d("My App", "success!!!!!!");
                             } catch (JSONException e) {
                                 Log.e("My App", "json exception");
@@ -127,10 +137,41 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             System.out.println("uh oh");
         }
-    }
-    void startQuoteApi() {
+        try {
+            String url2 = "https://thesimpsonsquoteapi.glitch.me/quotes";
+            JsonArrayRequest request2 = new JsonArrayRequest(Request.Method.GET, url2, null,
+                    new Response.Listener<JSONArray>() {
+                        @Override
+                        public void onResponse(JSONArray response) {
+                            Log.d("My App", "success!!!!!!");
+                            try {
+                                String quote = "";
+                                for (int i = 0; i < response.length(); i++) {
+                                    JSONObject obj = response.getJSONObject(i);
+                                    quote = obj.getString("quote");
+                                }
 
+                                //Picasso.get().load(newUrl).resize(600, 500).centerCrop().into(view);
+                                textBox.setText(quote);
+                                Log.d("My App", "success!!!!!!");
+                            } catch (JSONException e) {
+                                Log.e("My App", "json exception");
+                            }
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    textBox.setText(error.toString());
+                    Log.d("My App", "Sad" + error.toString());
+                    return;
+                }
+            });
+            queue.add(request2);
+        } catch (Exception e) {
+            System.out.println("uh oh");
+        }
     }
+
 
 }
 

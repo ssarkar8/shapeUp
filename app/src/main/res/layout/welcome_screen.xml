@@ -3,6 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:animateLayoutChanges="false"
+    android:background="#C8DEE3"
     android:orientation="vertical">
 
     <Button
@@ -10,14 +12,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="45dp"
+        android:background="#FFFFFF"
         android:text="Click Me!" />
 
     <TextView
         android:id="@+id/thing"
         android:layout_width="match_parent"
-        android:layout_height="124dp"
+        android:layout_height="220dp"
         android:text="TextView"
-        android:textColor="#ffffff"
+        android:textAlignment="center"
+        android:textColor="#009688"
         android:textSize="12pt" />
 
     <ImageView
@@ -25,5 +29,14 @@
         android:layout_width="match_parent"
         android:layout_height="281dp"
         app:srcCompat="@drawable/ic_launcher_foreground" />
+
+    <TextView
+        android:id="@+id/instruction"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:textAlignment="center"
+        android:textColor="#009688"
+        android:textSize="30sp" />
 
 </LinearLayout>
