@@ -1,5 +1,4 @@
 package com.example.shapeup;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,23 +7,17 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.AsyncTask;
+
 import android.os.Bundle;
 
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 import com.android.volley.*;
-import com.google.gson.JsonParser;
-import com.google.gson.*;
 import com.squareup.picasso.Picasso;
-
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -108,7 +101,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
     void startAPI() {
+
 
         RequestQueue queue = Volley.newRequestQueue(this);
         String url = "https://dog.ceo/api/breeds/image/random";
@@ -120,6 +115,7 @@ public class MainActivity extends AppCompatActivity {
                             Log.d("My App", "success!!!!!!");
                             try {
                                 String newUrl = response.get("message").toString();
+
                                 Picasso.get().load(newUrl).resize(600, 500).centerCrop().into(pic);
                                 Log.d("My App", "success!!!!!!");
                             } catch (JSONException e) {
